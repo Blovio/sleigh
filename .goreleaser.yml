@@ -1,6 +1,6 @@
 version: 2
 builds:
-  - main: ./cmd/sleigh
+  - main: ./
     binary: sleigh
     goos:
       - linux
