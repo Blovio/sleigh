@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func FetchPuzzleInput(year, day int, session string) (str string, status int, err error) {
+func FetchPuzzleInput(year, day int, session string) (res string, status int, err error) {
 	client := &http.Client{}
 	url := fmt.Sprintf("https://adventofcode.com/%d/day/%d/input", year, day)
 
@@ -41,6 +41,7 @@ func FetchPuzzleInput(year, day int, session string) (str string, status int, er
 
 	fmt.Println("----- Fetching Input -----")
 	fmt.Println("Status code:", resp.StatusCode)
+	fmt.Println("--------------------------")
 	return bodyString, resp.StatusCode, nil
 }
 
@@ -80,26 +81,27 @@ func main() {
 		fileName = fmt.Sprintf("%d-%s-input.txt", *year, dayFormatted)
 	}
 
-	var puzzleInput string
+	var response string
 	var statusCode int
 	var err error
-	if envCookie != "" {
-		puzzleInput, statusCode, err = FetchPuzzleInput(*year, *day, envCookie)
+	if *sessionCookie != "" {
+		response, statusCode, err = FetchPuzzleInput(*year, *day, *sessionCookie)
 	} else {
-		puzzleInput, statusCode, err = FetchPuzzleInput(*year, *day, *sessionCookie)
+		response, statusCode, err = FetchPuzzleInput(*year, *day, envCookie)
 	}
 
 	if err != nil {
-		fmt.Println(err)
-	}
-
-	if statusCode == 400 {
-		fmt.Printf("Response from adventofcode.com: %s\n", puzzleInput)
-		fmt.Println("This indicates there was a problem with your SESSION_COOKIE")
 		return
 	}
 
-	if statusCode == 200 {
+	if statusCode == 400 || statusCode == 500 {
+		fmt.Printf("Response from adventofcode.com:\n%s\n", response)
+		fmt.Println("------------------------------------")
+		fmt.Printf("%d indicates there was a problem with your SESSION_COOKIE", statusCode)
+		return
+	}
+
+	if statusCode >= 200 && statusCode < 300 {
 		file, err := os.Create(fileName)
 		if err != nil {
 			fmt.Println("Error creating file:", err)
@@ -107,9 +109,10 @@ func main() {
 		}
 		defer file.Close()
 
-		file.WriteString(puzzleInput)
+		file.WriteString(response)
 
 		fmt.Println("File created successfully:", fileName)
+		return
 	}
-
+	fmt.Printf("Response from adventofcode.com: %s\n", response)
 }
