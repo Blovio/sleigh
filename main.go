@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -62,7 +61,7 @@ func main() {
 	flag.Parse()
 
 	if *sessionCookie == "" && envCookie == "" {
-		fmt.Println("Requires a session cookie flag '-c', enter your session cookie to retrieve your input. \n\nOptionally, you can also create an .env file with: \nSESSION_COOKIE=<session_cookie>")
+		fmt.Println("Requires a session cookie flag '-c', enter your session cookie to retrieve your input. \n\nOptionally, you can also load a session cookie into your environment: \nexport SESSION_COOKIE=<session_cookie>")
 		return
 	}
 	// 2015 was the first year
@@ -108,7 +107,7 @@ func main() {
 		}
 		defer file.Close()
 
-		file.WriteString(strings.Trim(puzzleInput, "\n"))
+		file.WriteString(puzzleInput)
 
 		fmt.Println("File created successfully:", fileName)
 	}
