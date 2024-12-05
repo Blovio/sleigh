@@ -8,17 +8,7 @@ import (
 	"os"
 	"strings"
 	"time"
-
-	"github.com/joho/godotenv"
 )
-
-func init() {
-	// Load .env variables
-	err := godotenv.Load()
-	if err != nil {
-		// no env variables
-	}
-}
 
 func FetchPuzzleInput(year, day int, session string) (str string, status int, err error) {
 	client := &http.Client{}
@@ -72,7 +62,7 @@ func main() {
 	flag.Parse()
 
 	if *sessionCookie == "" && envCookie == "" {
-		fmt.Println("Requires a session cookie flag '-c', enter your session cookie to retrieve your input. \n\nOptionally, you can also create an .env file with: \nSESSION_COOKIE=<session_cookie>\nNote: AoC Session cookies last 30 days.")
+		fmt.Println("Requires a session cookie flag '-c', enter your session cookie to retrieve your input. \n\nOptionally, you can also create an .env file with: \nSESSION_COOKIE=<session_cookie>")
 		return
 	}
 	// 2015 was the first year
